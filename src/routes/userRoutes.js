@@ -22,6 +22,10 @@ routes.post('/login',(req,res,next)=>{
         if (!user){
             return res.status(401).json({message: "Crendenciais de acesso invalidas"})
         } 
+        if(user.isApproved === false){
+            return res.status(401).json({message: "Usuario nao aprovado pelo administrador"})
+        }
+        
         else {
           req.logIn(user, (err) => {
             const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '6h' });
