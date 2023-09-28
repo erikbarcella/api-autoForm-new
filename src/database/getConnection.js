@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-require('dotenv-safe').config();
 
 const connectDatabase=()=>{
        
