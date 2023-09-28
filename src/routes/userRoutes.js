@@ -22,7 +22,7 @@ routes.post('/login',(req,res,next)=>{
         if (!user){
             return res.status(401).json({message: "Crendenciais de acesso invalidas"})
         } 
-        if(user.isApproved === false){
+        if(!user.isApproved){
             return res.status(401).json({message: "Usuario nao aprovado pelo administrador"})
         }
         
@@ -37,7 +37,8 @@ routes.post('/login',(req,res,next)=>{
                     username: user.username,
                     name: user.name,
                     email: user.email,
-                    isAdmin: user.isAdmin
+                    isAdmin: user.isAdmin,
+                    isApproved: user.isApproved
                 },
                 token: token
             });
