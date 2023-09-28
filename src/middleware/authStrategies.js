@@ -3,6 +3,7 @@ const LocalStrategy = require("passport-local");
 const passportJWT = require('passport-jwt');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
+require('dotenv').config()
 
 // Configuração da estratégia local
 passport.use(new LocalStrategy(User.authenticate()));
