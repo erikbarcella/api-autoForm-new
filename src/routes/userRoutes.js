@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const passport = require("../middleware/authStrategies"); // Importar o módulo que exportamos anteriormente
 const User = require("../models/user");
 const expressSession = require("express-session");
+const isAdmin = require("../middleware/checkAdmin")
 
 const routes = express.Router();
 
@@ -73,6 +74,12 @@ routes.get('/users', passport.authenticate('jwt', { session: false }), (req, res
         return res.status(401).json({ message: 'Token expirado' });
       }
     res.json({ message: 'List of users (protected route).' });
-  });
+});
+// rota admin
+
+// routes.post('/users', passport.authenticate('jwt', { session: false }),isAdmin ,(req, res) => {
+// });
+
+
 
 module.exports= routes;
