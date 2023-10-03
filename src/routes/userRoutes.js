@@ -68,12 +68,17 @@ routes.post("/register", (req, res) => {
 });
 
 // Rota protegida
-routes.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
-    // console.log(req.user)
-    if (req.user.tokenExpired) {
-        return res.status(401).json({ message: 'Token expirado' });
+routes.get('/users',passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        if (req.user.tokenExpired) {
+            return res.status(401).json({ message: 'Token expirado' });
+          }
+        const users = await User.find(); // Obtém todos os usuários do banco de dados
+        res.json({"users": users});
+      } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+        res.status(500).json({ message: 'Erro ao buscar usuários' });
       }
-    res.json({ message: 'List of users (protected route).' });
 });
 // rota admin
 

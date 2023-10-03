@@ -3,8 +3,9 @@ const User = require('../models/user');
 
 const checkAdmin = async (req, res, next) => {
   try {
+    console.log("user request admin" + user)
     const user = await User.findById(req.user.id);
-
+    
     if (!user) {
       return res.status(401).json({ message: 'Usuário não autorizado.' });
     }

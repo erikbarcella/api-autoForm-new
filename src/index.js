@@ -23,5 +23,5 @@ const APP_PORT = process.env.APP_PORT || 3031;
 connectDatabase();
 
 app.listen(APP_PORT, () =>{
-    console.log("Server running ");
+    console.log("Server running "+ APP_PORT);
 })
