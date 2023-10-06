@@ -26,7 +26,6 @@ routes.post('/login',(req,res,next)=>{
         if(!user.isApproved){
             return res.status(403).json({message: "Usuario nao aprovado pelo administrador"})
         }
-        
         else {
           req.logIn(user, (err) => {
             const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '6h' });
@@ -68,16 +67,47 @@ routes.post("/register", (req, res) => {
 });
 
 // Rota protegida
-routes.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
-    // console.log(req.user)
+routes.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
+   
     if (req.user.tokenExpired) {
-        return res.status(401).json({ message: 'Token expirado' });
+      return res.status(401).json({ message: 'Token expirado' });
+    }
+    console.log(req.user.isAdmin)
+  
+    if (req.user.isAdmin === false) {
+      return res.status(403).json({ message: 'Usuário não autorizado' });
+    }
+  
+    if (req.user.isAdmin) {
+      try {
+        console.log("buscando users ")
+        const users = await User.find({});
+        return res.status(200).json({"users":users});
+      } catch (err) {
+        return res.status(500).json({ message: 'Erro ao buscar usuários' });
       }
-    res.json({ message: 'List of users (protected route).' });
-});
+    }
+  });
 // rota admin
-
 // routes.post('/users', passport.authenticate('jwt', { session: false }),isAdmin ,(req, res) => {
+//     console.log(req.user)
+
+//     if (req.user.tokenExpired) {
+//         return res.status(401).json({ message: 'Token expirado' });
+//       }
+//     if(req.user.isAdmin==false){
+//         return res.status(403).json({message: "Usuario nao autorizado"});
+//     } if(req.user.isAdmin){
+//         User.find(({}), (err, users)=>{
+//             if(err){
+//                 return res.status(500).json({message: "Erro ao buscar usuarios"});
+//             } else {
+//                 return res.status(200).json(users);
+//             }
+//         })
+//     }
+   
+
 // });
 
 
