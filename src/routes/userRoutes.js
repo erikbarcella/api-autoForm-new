@@ -68,16 +68,13 @@ routes.post("/register", (req, res) => {
 
 // Rota protegida
 routes.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-   
     if (req.user.tokenExpired) {
       return res.status(401).json({ message: 'Token expirado' });
     }
     console.log(req.user.isAdmin)
-  
     if (req.user.isAdmin === false) {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
-  
     if (req.user.isAdmin) {
       try {
         console.log("buscando users ")
@@ -88,6 +85,60 @@ routes.get('/users', passport.authenticate('jwt', { session: false }), async (re
       }
     }
   });
+
+  // Rota para alterar a senha de um usuário específico
+routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    // Verifique se o usuário é um administrador ou se está alterando sua própria senha
+    if (!req.user.isAdmin && req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({ message: 'Você não tem permissão para alterar a senha deste usuário' });
+    }
+
+    // Implemente a lógica para alterar a senha do usuário com base no ID
+    // ...
+
+    return res.status(200).json({ message: 'Senha alterada com sucesso' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro ao alterar a senha' });
+  }
+});
+
+
+// Rota para deletar um usuário específico
+routes.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    // Verifique se o usuário é um administrador ou se está excluindo sua própria conta
+    if (!req.user.isAdmin && req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({ message: 'Você não tem permissão para excluir este usuário' });
+    }
+
+    // Implemente a lógica para excluir o usuário com base no ID
+    // ...
+
+    return res.status(200).json({ message: 'Usuário excluído com sucesso' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro ao excluir o usuário' });
+  }
+});
+
+
+// Rota para autorizar um usuário específico
+routes.put('/users/:id/autorizar', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    // Verifique se o usuário é um administrador
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Você não tem permissão para autorizar usuários' });
+    }
+
+    // Implemente a lógica para autorizar o usuário com base no ID
+    // ...
+
+    return res.status(200).json({ message: 'Usuário autorizado com sucesso' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro ao autorizar o usuário' });
+  }
+});
+
 // rota admin
 // routes.post('/users', passport.authenticate('jwt', { session: false }),isAdmin ,(req, res) => {
 //     console.log(req.user)
