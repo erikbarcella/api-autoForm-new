@@ -86,35 +86,44 @@ routes.get('/users', passport.authenticate('jwt', { session: false }), async (re
   });
 
   // Rota para alterar a senha de um usuário específico
-  routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-      if (!req.user.isAdmin && req.user._id.toString() !== req.params.id) {
-        return res.status(403).json({ message: 'Você não tem permissão para alterar a senha deste usuário' });
-      }
-      if (req.body.newPassword.length < 6) {
-        return res.status(400).json({ message: 'A nova senha deve ter pelo menos 6 caracteres' });
-      }
-      
-      const user = await User.findById(req.params.id);
-      
-      if (!user) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
-      }
-      // Atualize o hash e salt da senha do usuário para a nova senha fornecida
-      user.setPassword(req.body.newPassword, async () => {
-        try {
-          await user.save();
-          return res.status(200).json({ message: 'Senha do usuário atualizada com sucesso' });
-        } catch (err) {
-          console.error(err);
-          return res.status(500).json({ message: 'Erro ao salvar a nova senha' });
-        }
-      });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Erro ao alterar a senha' });
+ // Rota para atualizar a senha de um usuário
+routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const newPassword = req.body.newPassword;
+
+    // Verifique se o usuário que está fazendo a solicitação é o próprio usuário ou um administrador
+    if (!req.user.isAdmin && req.user._id.toString() !== userId) {
+      return res.status(403).json({ message: 'Você não tem permissão para alterar a senha deste usuário' });
     }
-  });
+
+    // Verifique se a nova senha atende aos requisitos (por exemplo, tamanho mínimo)
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'A nova senha deve ter pelo menos 6 caracteres' });
+    }
+
+    // Encontre o usuário no banco de dados
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Atualize a senha do usuário
+    user.setPassword(newPassword, async () => {
+      try {
+        await user.save();
+        return res.status(200).json({ message: 'Senha do usuário atualizada com sucesso' });
+      } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Erro ao salvar a nova senha' });
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Erro ao alterar a senha' });
+  }
+});
   
 
 // Rota para deletar um usuário específico
