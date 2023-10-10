@@ -85,30 +85,19 @@ routes.get('/users', passport.authenticate('jwt', { session: false }), async (re
     }
   });
 
-  // Rota para alterar a senha de um usuário específico
- // Rota para atualizar a senha de um usuário
+// Rota para atualizar a senha de um usuário
 routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const userId = req.params.id;
     const newPassword = req.body.newPassword;
-
-    // Verifique se o usuário que está fazendo a solicitação é o próprio usuário ou um administrador
     if (!req.user.isAdmin && req.user._id.toString() !== userId) {
       return res.status(403).json({ message: 'Você não tem permissão para alterar a senha deste usuário' });
     }
-
-    // Verifique se a nova senha atende aos requisitos (por exemplo, tamanho mínimo)
     if (newPassword.length < 6) {
       return res.status(400).json({ message: 'A nova senha deve ter pelo menos 6 caracteres' });
     }
-
-    // Encontre o usuário no banco de dados
     const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
-
+    if (!user) {return res.status(404).json({ message: 'Usuário não encontrado' });}
     // Atualize a senha do usuário
     user.setPassword(newPassword, async () => {
       try {
@@ -159,29 +148,6 @@ routes.put('/users/:id/autorizar', passport.authenticate('jwt', { session: false
     return res.status(500).json({ message: 'Erro ao autorizar o usuário' });
   }
 });
-
-// rota admin
-// routes.post('/users', passport.authenticate('jwt', { session: false }),isAdmin ,(req, res) => {
-//     console.log(req.user)
-
-//     if (req.user.tokenExpired) {
-//         return res.status(401).json({ message: 'Token expirado' });
-//       }
-//     if(req.user.isAdmin==false){
-//         return res.status(403).json({message: "Usuario nao autorizado"});
-//     } if(req.user.isAdmin){
-//         User.find(({}), (err, users)=>{
-//             if(err){
-//                 return res.status(500).json({message: "Erro ao buscar usuarios"});
-//             } else {
-//                 return res.status(200).json(users);
-//             }
-//         })
-//     }
-   
-
-// });
-
 
 
 module.exports= routes;
