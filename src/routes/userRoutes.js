@@ -98,18 +98,15 @@ routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }),
     }
     const user = await User.findById(userId);
     if (!user) {return res.status(404).json({ message: 'Usuário não encontrado' });}
-    // Atualize a senha do usuário
     user.setPassword(newPassword, async () => {
       try {
         await user.save();
         return res.status(200).json({ message: 'Senha do usuário atualizada com sucesso' });
       } catch (err) {
-        console.error(err);
         return res.status(500).json({ message: 'Erro ao salvar a nova senha' });
       }
     });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Erro ao alterar a senha' });
   }
 });
@@ -117,18 +114,16 @@ routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }),
 
 // Rota para deletar um usuário específico
 routes.delete('/users/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  console.log(req.params.id)
   try {
     if (!req.user.isAdmin && req.user._id.toString() !== req.params.id) {
       return res.status(403).json({ message: 'Você não tem permissão para excluir este usuário' });
     }
     if(req.user.isAdmin){
-      let res = await User.deleteOne({"_id": req.params.id});
-      if(res.deletedCount === 0)return res.status(404).json({ message: 'Usuário não encontrado' });
+      let response = await User.deleteOne({"_id": req.params.id});
+      if(response.deletedCount === 0)return res.status(404).json({ message: 'Usuário não encontrado' });
       return res.status(200).json({ message: 'Usuário excluído com sucesso' });
     }
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ message: 'Erro ao excluir o usuário' });
   }
 });
@@ -144,7 +139,6 @@ routes.put('/users/:id/autorizar', passport.authenticate('jwt', { session: false
       return res.status(200).json({ message: `Usuário autorizado com sucesso` });
     } 
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ message: 'Erro ao autorizar o usuário' });
   }
 });
