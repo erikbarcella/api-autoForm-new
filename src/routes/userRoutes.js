@@ -143,5 +143,26 @@ routes.put('/users/:id/autorizar', passport.authenticate('jwt', { session: false
   }
 });
 
+routes.put('/users/:id/bloquear', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Você não tem permissão para bloquear o acesso de usuários' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    user.isApproved = false;
+    await user.save();
+
+    return res.status(200).json({ message: 'Acesso do usuário bloqueado com sucesso' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro ao bloquear o acesso do usuário' });
+  }
+});
+
+
 
 module.exports= routes;
