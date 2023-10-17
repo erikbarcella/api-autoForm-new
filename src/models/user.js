@@ -7,7 +7,8 @@ let UserSchema = new mongoose.Schema({
     name: String,
     email: {type: String, unique: true, required: true},
     isAdmin: {type: Boolean, default: false},
-    isApproved: { type: Boolean, default: false }
+    isApproved: { type: Boolean, default: false },
+    // lastActive: { type: Date, default: Date.now }, // Data da última atividade
 });
 
 UserSchema.plugin(passportLocalMongoose);

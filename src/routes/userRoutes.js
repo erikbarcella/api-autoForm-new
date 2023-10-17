@@ -29,6 +29,11 @@ routes.post('/login',(req,res,next)=>{
           req.logIn(user, (err) => {
             const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '6h' });
             //console.log(token)
+            /* User.findByIdAndUpdate(req.user.id, { lastActive: new Date() }, (err, user) => {
+              if (err) {
+                console.error('Erro ao atualizar a última atividade do usuário:', err);
+              }
+            }); */
             if (err) throw err;
             return res.status(200).json({
                 user:{
