@@ -72,16 +72,16 @@ routes.post("/register", (req, res) => {
 
 // Rota protegida
 routes.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    if (req.user.tokenExpired) {
+  
+  if (req.user.tokenExpired) {
       return res.status(401).json({ message: 'Token expirado' });
     }
-    console.log(req.user.isAdmin)
+    
     if (req.user.isAdmin === false) {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
     if (req.user.isAdmin) {
       try {
-        console.log("buscando users ")
         const users = await User.find({});
         return res.status(200).json({"users":users});
       } catch (err) {
