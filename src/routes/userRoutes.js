@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const passport = require("../middleware/authStrategies"); 
 const User = require("../models/user");
 const expressSession = require("express-session");
-const isAdmin = require("../middleware/checkAdmin")
 
 const routes = express.Router();
 
@@ -28,12 +27,6 @@ routes.post('/login',(req,res,next)=>{
         else {
           req.logIn(user, (err) => {
             const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '6h' });
-            //console.log(token)
-            /* User.findByIdAndUpdate(req.user.id, { lastActive: new Date() }, (err, user) => {
-              if (err) {
-                console.error('Erro ao atualizar a última atividade do usuário:', err);
-              }
-            }); */
             if (err) throw err;
             return res.status(200).json({
                 user:{
@@ -56,27 +49,22 @@ routes.post("/register", (req, res) => {
     }), req.body.password, (err, user) => {
         if(err){
             if(err.name === "UserExistsError")
-            // console.log(err.name);
             return res.status(401).json({message: "Usuario existente"})
         } else if(err){
-            // console.log(err);
             res.send("Erro ao registrar usuário");
         } else {
             passport.authenticate("local")(req, res, ()=>{
-                // console.log("Usuário registrado com sucesso");
                 return res.status(200).json({message: "Usuario registrado com sucesso"});
             });
         }
     })
 });
 
-// Rota protegida
+// Rota que retorna os dados dos usuarios
 routes.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  
   if (req.user.tokenExpired) {
       return res.status(401).json({ message: 'Token expirado' });
     }
-    
     if (req.user.isAdmin === false) {
       return res.status(403).json({ message: 'Usuário não autorizado' });
     }
@@ -147,7 +135,7 @@ routes.put('/users/:id/autorizar', passport.authenticate('jwt', { session: false
     return res.status(500).json({ message: 'Erro ao autorizar o usuário' });
   }
 });
-
+// rota para bloquear o acesso de um usuario 
 routes.put('/users/:id/bloquear', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     if (!req.user.isAdmin) {
@@ -161,7 +149,6 @@ routes.put('/users/:id/bloquear', passport.authenticate('jwt', { session: false 
 
     user.isApproved = false;
     await user.save();
-
     return res.status(200).json({ message: 'Acesso do usuário bloqueado com sucesso' });
   } catch (err) {
     return res.status(500).json({ message: 'Erro ao bloquear o acesso do usuário' });
