@@ -33,7 +33,6 @@ routes.post('/login',(req,res,next)=>{
                     id: user._id,
                     username: user.username,
                     name: user.name,
-                    email: user.email,
                     isAdmin: user.isAdmin,
                     isApproved: user.isApproved
                 },
@@ -154,6 +153,8 @@ routes.put('/users/:id/bloquear', passport.authenticate('jwt', { session: false 
     return res.status(500).json({ message: 'Erro ao bloquear o acesso do usuário' });
   }
 });
+
+
 
 
 
