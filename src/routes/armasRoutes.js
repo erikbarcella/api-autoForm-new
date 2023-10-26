@@ -14,6 +14,16 @@ routes.use(expressSession({
 routes.use(passport.initialize());
 routes.use(passport.session());
 
+routes.get('/armas', passport.authenticate('jwt', { session: false }), async (req, res) => {
+      try {
+        const armas = await Arma.find({});
+        return res.status(200).json({"armas":armas});
+      } catch (err) {
+        return res.status(500).json({ message: 'Erro ao buscar armas' });
+      }
+  });
+
+
 routes.post('/arma/new', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
       const novaArma = new Arma(req.body);
