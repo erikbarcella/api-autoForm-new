@@ -85,8 +85,8 @@ routes.put('/users/:id/senha', passport.authenticate('jwt', { session: false }),
     if (!req.user.isAdmin && req.user._id.toString() !== userId) {
       return res.status(403).json({ message: 'Você não tem permissão para alterar a senha deste usuário' });
     }
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: 'A nova senha deve ter pelo menos 6 caracteres' });
+    if (newPassword.length < 4) {
+      return res.status(400).json({ message: 'A nova senha deve ter pelo menos 4 caracteres' });
     }
     const user = await User.findById(userId);
     if (!user) {return res.status(404).json({ message: 'Usuário não encontrado' });}
