@@ -38,14 +38,14 @@ const armaSchema = new mongoose.Schema({
   },
   TipoAlma: {
     type: String,
-    enum: ['L', 'R'],
+    enum: ['L', 'R', 'ND'],
   },
   NumeroRaias: {
     type: String,
   },
   SentidoRaias: {
     type: String,
-    enum: ['E', 'D'],
+    enum: ['E', 'D', 'ND'],
   },
   NomeAcabamento: {
     type: String,
