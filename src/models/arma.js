@@ -17,6 +17,9 @@ const armaSchema = new mongoose.Schema({
     type: String,
     maxlength: 30,
   },
+  IdCalibre: {
+    type: String,
+  },
   GrupoCalibreArma: {
     type: String,
   },
